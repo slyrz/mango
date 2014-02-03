@@ -1,27 +1,8 @@
 // mango - generate man pages from the source of your Go commands
 //
-// Descrition
-// ----------
-// Lorem ipsum dolor sit amet, *consetetur* sadipscing elitr, sed diam nonumy
-// eirmod tempor invidunt ut labore et _dolore_ magna aliquyam erat, sed diam
-// voluptua.
+// Description:
 //
-//  	echo "Hello World"
-//
-// At vero eos et accusam et justo duo dolores et ea rebum. Stet clita
-// kasd gubergren, no sea takimata sanctus est.
-//
-// Lorem ipsum dolor sit amet, consetetur sadipscing elitr, sed diam nonumy
-// eirmod tempor invidunt ut labore et dolore magna aliquyam erat, sed diam
-// voluptua. At vero eos et accusam et justo duo dolores et ea rebum. Stet
-// clita kasd gubergren, no sea takimata sanctus est Lorem ipsum dolor sit amet.
-//
-// Return Codes
-// ------------
-// 0) Success
-// 1) EOF
-// *) Let's try and see end
-//    what happens here.
+// TODO...
 //
 package main
 
