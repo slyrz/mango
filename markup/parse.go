@@ -1,9 +1,5 @@
 package markup
 
-import (
-	"errors"
-)
-
 const (
 	NODE_GROUP = iota
 	NODE_BLOCK
@@ -75,8 +71,10 @@ func (n *Node) IsTextNode() bool {
 type Parser struct {
 	root  *Node
 	curr  *Node
-	onAdd func(*Parser, *Node) // Function get's called before the next node
-	// get's added to the current node.
+
+	// The onAdd function get's called before the next node is added to the
+	// current node.
+	onAdd func(*Parser, *Node) bool
 }
 
 type TokenGroup struct {
@@ -130,6 +128,7 @@ func NewParser() *Parser {
 	return new(Parser)
 }
 
+// Add a new node of the specified kind with an optional text.
 func (p *Parser) addNode(kind int, text ...string) *Node {
 	var node *Node = nil
 	if len(text) == 0 {
@@ -138,14 +137,20 @@ func (p *Parser) addNode(kind int, text ...string) *Node {
 		node = NewNodeWithText(kind, text[0])
 	}
 
+	// If there's a callback regisitered, execute it before adding the current
+	// node.
 	if callback := p.onAdd; callback != nil {
+		// Set callback to nil so we don't get caught in an endless recursion.
 		p.onAdd = nil
-		callback(p, node)
+		if !callback(p, node) {
+			return nil
+		}
 	}
 	p.curr.AddChild(node)
 	return node
 }
 
+// Return the last node added.
 func (p *Parser) lastNode() *Node {
 	if len(p.curr.Childs) > 0 {
 		return p.curr.Childs[len(p.curr.Childs)-1]
@@ -176,10 +181,6 @@ func (p *Parser) closeAllGroups() {
 	p.curr = p.root
 }
 
-func (p *Parser) GetRoot() *Node {
-	return p.root
-}
-
 func (p *Parser) Parse(tokens []*Token) *Node {
 	p.root = NewNode(NODE_GROUP)
 	p.curr = p.root
@@ -188,7 +189,7 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 		return p.root
 	}
 
-	// Split tokens into groups.
+	// Split tokens into groups with EOL tokens as seperators.
 	groups := make([]*TokenGroup, 0)
 	for len(tokens) > 0 {
 		group, consumed := NewTokenGroup(tokens)
@@ -219,7 +220,9 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 		}
 
 		if group.Tokens().Are(TOKEN_BLOCKITEM) {
+			// Consume token
 			item := group.Next()
+			// If the parent node isn't a block node, create one.
 			if p.curr.Kind != NODE_BLOCK {
 				p.curr = p.addNode(NODE_BLOCK)
 			}
@@ -247,11 +250,13 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 			p.curr = p.addNode(NODE_LISTITEM, item.Text)
 		}
 
+		// Add a space node if two text nodes are seperated by a line break.
 		if p.lastNode().IsTextNode() {
-			p.onAdd = func(p *Parser, n *Node) {
+			p.onAdd = func(p *Parser, n *Node) bool {
 				if n.IsTextNode() {
 					p.addNode(NODE_SPACE)
 				}
+				return true
 			}
 		}
 
@@ -279,10 +284,13 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 			}
 		}
 
+		// If the group contained no tokens, the onAdd function wasn't used and
+		// we remove it.
 		if p.onAdd != nil {
 			p.onAdd = nil
 		}
 
+		// Remeber level of current group.
 		lastLevel = group.level
 	}
 	return p.root
