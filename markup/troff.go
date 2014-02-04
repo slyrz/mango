@@ -56,7 +56,7 @@ func (tr *TroffRenderer) Section(text string) {
 }
 
 func (tr *TroffRenderer) Space() {
-	// pass
+	return
 }
 
 func (tr *TroffRenderer) Break() {
@@ -122,8 +122,7 @@ func (w *TroffWriter) Head() string {
 	titleHi := strings.Title(w.title)
 	dateStr := fmt.Sprintf("%02d/%02d/%d", w.date.Day(), w.date.Month(), w.date.Year())
 
-	// .TH name section center-footer left-footer center-header
-	return fmt.Sprintf(".TH \"%s\" \"1\" \"\" \"%s\" \"%s Manual\"", titleLo, dateStr, titleHi)
+	return fmt.Sprintf(".TH \"%s\" \"1\" \"\" \"%s\" \"%s Manual\"\n", titleLo, dateStr, titleHi)
 }
 
 func (w *TroffWriter) Tail() string {
@@ -134,9 +133,7 @@ func NewTroffWriter() *TroffWriter {
 	result := new(TroffWriter)
 	result.parts = make(map[string]*bytes.Buffer)
 	result.order = make([]string, 0)
-
 	result.title = ""
 	result.date = time.Now()
-
 	return result
 }

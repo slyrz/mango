@@ -19,6 +19,8 @@ type Writer interface {
 }
 
 func Save(writer Writer) {
+	// Special sections we care about. We want to print them in this order,
+	// no matter where they were defined.
 	sections := []string{
 		"name",
 		"synopsis",
@@ -26,7 +28,12 @@ func Save(writer Writer) {
 		"options",
 	}
 
-	fmt.Println(writer.Head())
+	head := writer.Head()
+	tail := writer.Tail()
+
+	if len(head) > 0 {
+		fmt.Print(head)
+	}
 
 	parts := writer.Parts()
 	for _, name := range sections {
@@ -44,6 +51,7 @@ func Save(writer Writer) {
 		}
 	}
 
-	fmt.Println(writer.Tail())
-
+	if len(tail) > 0 {
+		fmt.Print(tail)
+	}
 }
