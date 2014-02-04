@@ -46,7 +46,7 @@ isthmus of Europe Minor to wielderfight his penisolate war.
 Asterisks (\*) and underscores (\_) are indicators of emphasis.
 
 ```
-*Riverrun*, past _Eve and Adam's_, from swerve of shore to bend
+*Wassaily Booslaeugh* of _Riesengeborg_
 ```
 
 ### Code
@@ -54,7 +54,7 @@ Asterisks (\*) and underscores (\_) are indicators of emphasis.
 Code blocks begin with a closing angle bracket (>).
 
 ```
-> echo "Hello World"
+> echo "Kick nuck, Knockcastle"
 ```
 
 ### Lists
@@ -71,7 +71,7 @@ at the start of a line create list items.
 2) Item
 3) Item
 
-abc) Item
-def) Item
-ghi) Item
+a) Item
+b) Item
+c) Item
 ```
