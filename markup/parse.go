@@ -69,8 +69,8 @@ func (n *Node) IsTextNode() bool {
 }
 
 type Parser struct {
-	root  *Node
-	curr  *Node
+	root *Node
+	curr *Node
 
 	// The onAdd function gets called before the next node is added to the
 	// current node.
