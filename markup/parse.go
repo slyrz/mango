@@ -51,7 +51,7 @@ func (n *Node) String() string {
 	case NODE_BREAK:
 		return "Break"
 	}
-	return "Unkown"
+	return "Unknown"
 }
 
 func (n *Node) AddChild(c *Node) {
@@ -72,7 +72,7 @@ type Parser struct {
 	root  *Node
 	curr  *Node
 
-	// The onAdd function get's called before the next node is added to the
+	// The onAdd function gets called before the next node is added to the
 	// current node.
 	onAdd func(*Parser, *Node) bool
 }
@@ -137,7 +137,7 @@ func (p *Parser) addNode(kind int, text ...string) *Node {
 		node = NewNodeWithText(kind, text[0])
 	}
 
-	// If there's a callback regisitered, execute it before adding the current
+	// If there's a callback registered, execute it before adding the current
 	// node.
 	if callback := p.onAdd; callback != nil {
 		// Set callback to nil so we don't get caught in an endless recursion.
@@ -189,7 +189,7 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 		return p.root
 	}
 
-	// Split tokens into groups with EOL tokens as seperators.
+	// Split tokens into groups with EOL tokens as separators.
 	groups := make([]*TokenGroup, 0)
 	for len(tokens) > 0 {
 		group, consumed := NewTokenGroup(tokens)
@@ -232,7 +232,7 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 		// Check if the current line is a list item.
 		if group.Tokens().Are(TOKEN_LISTITEM) {
 			item := group.Next()
-			// We want to add the listitem node to a list node.
+			// We want to add the list item node to a list node.
 			// There a three possibilities:
 			switch p.curr.Kind {
 			case NODE_LISTITEM:
@@ -243,14 +243,14 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 				// The parent node is a list. There's nothing we need to do.
 				break
 			default:
-				// The parent node is neither a list nor a listitem.
+				// The parent node is neither a list nor a list item.
 				// We have to create a new list node.
 				p.curr = p.addNode(NODE_LIST)
 			}
 			p.curr = p.addNode(NODE_LISTITEM, item.Text)
 		}
 
-		// Add a space node if two text nodes are seperated by a line break.
+		// Add a space node if two text nodes are separated by a line break.
 		if p.lastNode().IsTextNode() {
 			p.onAdd = func(p *Parser, n *Node) bool {
 				if n.IsTextNode() {
@@ -290,7 +290,7 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 			p.onAdd = nil
 		}
 
-		// Remeber level of current group.
+		// Remember level of current group.
 		lastLevel = group.level
 	}
 	return p.root
