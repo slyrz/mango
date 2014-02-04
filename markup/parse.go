@@ -295,3 +295,12 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 	}
 	return p.root
 }
+
+func (p *Parser) ParsePart(tokens []*Token) *Node {
+	root := p.root
+	child := p.Parse(tokens)
+	root.AddChild(child)
+	p.root = root
+	p.curr = root
+	return child
+}

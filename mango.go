@@ -28,7 +28,6 @@ func NewBuilder() *Builder {
 	result.Parser = markup.NewParser()
 	result.Writer = markup.NewTroffWriter()
 	result.Renderer = markup.NewTroffRenderer(result.Writer)
-
 	return result
 }
 
@@ -52,15 +51,16 @@ func (b *Builder) Load(path string) error {
 
 	b.feedSynopsis()
 	b.feedOptions()
-
 	return nil
 }
 
 func (b *Builder) feedSynopsis() {
 	b.Renderer.Section("Synopsis")
 	b.Renderer.Text(b.File.Name)
-	b.Renderer.TextUnderline("[option]")
-	b.Renderer.Text("... ")
+	if len(b.File.Options) > 0 {
+		b.Renderer.TextUnderline("[option]")
+		b.Renderer.Text("... ")
+	}
 	b.Renderer.TextUnderline("[args]")
 	b.Renderer.Text("... ")
 	b.Renderer.Break()
@@ -71,28 +71,36 @@ func (b *Builder) feedOptions() {
 		return
 	}
 
-	b.Renderer.Section("options")
+	b.Renderer.Section("Options")
 	for _, opt := range b.File.Options {
+		textHead := ""
+		textBody := ""
+
 		if len(opt.Short) > 0 {
-			b.Renderer.TextBold(fmt.Sprintf("-%s, ", opt.Short))
-		}
-		b.Renderer.TextBold(fmt.Sprintf("-%s", opt.Name))
-
-		text := ""
-		if len(opt.Doc) > 0 {
-			text = opt.Doc
+			textHead = fmt.Sprintf("-%s, -%s", opt.Short, opt.Name)
 		} else {
-			text = opt.Usage
+			textHead = fmt.Sprintf("-%s", opt.Name)
 		}
 
-		tokens, err := b.Tokenizer.TokenizeString(text)
+		if len(opt.Doc) > 0 {
+			textBody = opt.Doc
+		} else {
+			textBody = opt.Usage
+		}
+
+		// Tokenize body text. We haven't written anythin yet, so if Tokenize()
+		// function fails, the document stays unchanged and we try to parse the
+		// next option.
+		tokens, err := b.Tokenizer.TokenizeString(textBody)
 		if err != nil {
-			panic(err)
+			fmt.Fprintf(os.Stderr, "Warning:")
+			continue
 		}
 
-		node := b.Parser.Parse(tokens)
-		node.Parent = b.Root
-		markup.Render(b.Renderer, node)
+		b.Renderer.TextBold(textHead)
+		if len(tokens) > 0 {
+			markup.Render(b.Renderer, b.Parser.ParsePart(tokens))
+		}
 		b.Renderer.Break()
 	}
 }
@@ -108,9 +116,20 @@ func (b *Builder) Save(path string) error {
 }
 
 func main() {
-	for _, filename := range os.Args[1:] {
+	for _, srcPath := range os.Args[1:] {
 		builder := NewBuilder()
-		builder.Load(filename)
-		builder.Save(fmt.Sprintf("%s.1", builder.File.Name))
+
+		if err := builder.Load(srcPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: Could not open file '%s': %s\n", srcPath, err)
+			continue
+		}
+
+		dstPath := fmt.Sprintf("%s.1", builder.File.Name)
+		if err := builder.Save(dstPath); err != nil {
+			fmt.Fprintf(os.Stderr, "Warning: Could not save '%s': %s\n", dstPath, err)
+			continue
+		}
+
+		fmt.Printf("%s -> %s\n", srcPath, dstPath)
 	}
 }
