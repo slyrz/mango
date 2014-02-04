@@ -67,8 +67,11 @@ func (b *Builder) feedSynopsis() {
 }
 
 func (b *Builder) feedOptions() {
-	b.Renderer.Section("options")
+	if len(b.File.Options) == 0 {
+		return
+	}
 
+	b.Renderer.Section("options")
 	for _, opt := range b.File.Options {
 		if len(opt.Short) > 0 {
 			b.Renderer.TextBold(fmt.Sprintf("-%s, ", opt.Short))
