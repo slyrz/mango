@@ -50,6 +50,10 @@ func (n *Node) String() string {
 		return "List"
 	case NODE_LISTITEM:
 		return "ListItem"
+	case NODE_SPACE:
+		return "Space"
+	case NODE_BREAK:
+		return "Break"
 	}
 	return "Unkown"
 }
