@@ -7,7 +7,7 @@ import (
 )
 
 const (
-	TOKEN_EOL = 1 << iota
+	TOKEN_EOL = iota
 	TOKEN_SECTION
 	TOKEN_TEXT
 	TOKEN_INDENT
@@ -29,10 +29,6 @@ type Token struct {
 	Text string
 }
 
-func EmptyToken() *Token {
-	return NewTokenWithText(0, "")
-}
-
 func NewToken(kind int) *Token {
 	return NewTokenWithText(kind, "")
 }
@@ -41,6 +37,7 @@ func NewTokenWithText(kind int, text string) *Token {
 	return &Token{kind, text}
 }
 
+// Return true if token is of given kind.
 func (t *Token) Is(kind int) bool {
 	return t.Kind == kind
 }
@@ -78,8 +75,10 @@ func kindToString(kind int) string {
 		return "Section"
 	case TOKEN_LISTITEM:
 		return "Listitem"
+	case TOKEN_BLOCKITEM:
+		return "Blockitem"
 	}
-	return ""
+	return "Unknown"
 }
 
 func (t *Token) String() string {
@@ -112,7 +111,7 @@ func (t *Tokenizer) TokenizeLines(lines []string) ([]*Token, error) {
 	return t.tokens, nil
 }
 
-//
+// Add a new token of specified kind with an optional text to the token list.
 func (t *Tokenizer) addToken(kind int, text ...string) {
 	var token *Token = nil
 	if len(text) == 0 {
@@ -123,7 +122,7 @@ func (t *Tokenizer) addToken(kind int, text ...string) {
 	t.tokens = append(t.tokens, token)
 }
 
-// skipChars skips the next n characters of the current line.
+// Skip the next n characters of the current line.
 func (t *Tokenizer) skipChars(n int) {
 	if n < len(t.text) {
 		t.text = t.text[n:]
@@ -132,12 +131,12 @@ func (t *Tokenizer) skipChars(n int) {
 	}
 }
 
-// skipLine skips the current line.
+// Skip the current line.
 func (t *Tokenizer) skipLine() {
 	t.text = ""
 }
 
-// parseIndentation
+// Parse and skip the indentation.
 func (t *Tokenizer) parseIndentation() {
 	skipped := 0 // Number of chars consumed
 	spaces := 0  // Number of spaces detected
@@ -160,12 +159,11 @@ SkipLoop:
 	t.skipChars(skipped)
 }
 
-// parseListItem
+// Try to parse a list item declaration.
 func (t *Tokenizer) parseListItem() {
 	if match := reListItem.FindStringSubmatch(t.text); match != nil {
 		matchTotal := match[0] // everything including ')' and trailing whitespace
 		matchItem := match[1]  // the word or '*' before ')'
-
 		t.addToken(TOKEN_LISTITEM, matchItem)
 		t.skipChars(len(matchTotal))
 	}
@@ -180,7 +178,7 @@ func (t *Tokenizer) lastTokens(n int) Tokens {
 	return Tokens(t.tokens[i:])
 }
 
-// Parse Makrdown-style section declaration: A line of text followed by a line
+// Parse Markdown-style section declaration: A line of text followed by a line
 // of dashes or equal signs.
 //
 //		This Is A Title  or  This Is A Title
