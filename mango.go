@@ -94,14 +94,20 @@ func (b *Builder) feedOptions() {
 	}
 }
 
-func (b *Builder) Save(path string) {
-	markup.Save(b.Writer)
+func (b *Builder) Save(path string) error {
+	file, err := os.OpenFile(path, os.O_CREATE|os.O_WRONLY, 0644)
+	if err != nil {
+		return err
+	}
+	defer file.Close()
+
+	return markup.Save(b.Writer, file)
 }
 
 func main() {
 	for _, filename := range os.Args[1:] {
 		builder := NewBuilder()
 		builder.Load(filename)
-		builder.Save("")
+		builder.Save(fmt.Sprintf("%s.1", builder.File.Name))
 	}
 }
