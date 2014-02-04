@@ -16,8 +16,7 @@ func NewTroffRenderer(output Writer) *TroffRenderer {
 }
 
 func (tr *TroffRenderer) Group(n *Node) {
-	// Dont indent the root node.
-	// Make group left aligned if it contains text only.
+	// Don't indent the root node.
 	if n.Parent != nil {
 		tr.Output.Write(".RS 4\n")
 	}
@@ -41,7 +40,6 @@ func (tr *TroffRenderer) List(n *Node) {
 
 func (tr *TroffRenderer) ListItem(n *Node) {
 	tr.Output.Write(".TP\n")
-
 	if n.Text == "*" {
 		tr.Output.Write("\\(bu\n")
 	} else {
