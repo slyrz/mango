@@ -17,7 +17,6 @@ type Builder struct {
 	File      *source.File
 	Tokenizer *markup.Tokenizer
 	Parser    *markup.Parser
-	Root      *markup.Node
 	Renderer  markup.Renderer
 	Writer    markup.Writer
 }
@@ -39,19 +38,21 @@ func (b *Builder) Load(path string) error {
 	b.File = file
 
 	b.Writer.WriteTitle(b.File.Name)
-
-	tokens, err := b.Tokenizer.TokenizeString(b.File.Doc)
-	if err != nil {
-		return err
-	}
-
-	b.Root = b.Parser.Parse(tokens)
-	b.Renderer.Section("Name")
-	markup.Render(b.Renderer, b.Root)
-
+	b.Writer.WriteDate(b.File.Time)
+	b.feedDocumentation()
 	b.feedSynopsis()
 	b.feedOptions()
 	return nil
+}
+
+func (b *Builder) feedDocumentation() {
+	tokens, err := b.Tokenizer.TokenizeString(b.File.Doc)
+	if err != nil {
+		return
+	}
+
+	b.Renderer.Section("Name")
+	markup.Render(b.Renderer, b.Parser.Parse(tokens))
 }
 
 func (b *Builder) feedSynopsis() {

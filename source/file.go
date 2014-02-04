@@ -5,7 +5,9 @@ import (
 	"go/ast"
 	"go/parser"
 	"go/token"
+	"os"
 	"path"
+	"time"
 )
 
 var (
@@ -14,8 +16,9 @@ var (
 
 type File struct {
 	Options []*Option // Options found in file.
-	Name    string    // Name of file.
+	Name    string    // Name of command.
 	Doc     string    // Comment at top of file.
+	Time    time.Time // Modification time.
 
 	// Unexported fields
 	fileSet  *token.FileSet
@@ -26,13 +29,19 @@ type File struct {
 func NewFile(filePath string) (*File, error) {
 	result := new(File)
 
-	_, name := path.Split(filePath)
+	// Get modification time and base name of source file.
+	fileInfo, err := os.Stat(filePath)
+	if err != nil {
+		return nil, err
+	}
+	result.Time = fileInfo.ModTime()
+	result.Name = fileInfo.Name()
 
-	// Check if path seems to be a .go file
-	if ext := path.Ext(name); ext != ".go" {
+	// Check if file has a .go extension.
+	if ext := path.Ext(result.Name); ext != ".go" {
 		return nil, ErrFileType
 	} else {
-		result.Name = name[:len(name)-len(ext)] // remove ".go" to get name
+		result.Name = result.Name[:len(result.Name)-3] // remove ".go"
 	}
 
 	fileSet := token.NewFileSet()
