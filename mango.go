@@ -88,7 +88,7 @@ func (b *Builder) feedOptions() {
 			textBody = opt.Usage
 		}
 
-		// Tokenize body text. We haven't written anythin yet, so if Tokenize()
+		// Tokenize body text. We haven't written anything yet, so if Tokenize
 		// function fails, the document stays unchanged and we try to parse the
 		// next option.
 		tokens, err := b.Tokenizer.TokenizeString(textBody)
