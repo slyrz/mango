@@ -1,7 +1,15 @@
 # mango
 
+*Generate manual pages from the source code of your Go commands*
+
+*mango* is a small command line utility that allows you to create manual
+pages from the source code of your Go commands.
 
 ## Overview
+
+TODO: ...
+
+## Formatting
 
 mango supports comment formatting in a Markdown-like syntax.
 
@@ -75,3 +83,9 @@ a) Item
 b) Item
 c) Item
 ```
+
+### License
+
+mango is released under MIT license.
+You can find a copy of the MIT License in the [LICENSE](./LICENSE) file.
+
