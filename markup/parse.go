@@ -17,13 +17,6 @@ const (
 	NODE_BREAK
 )
 
-var (
-	ErrEOF       = errors.New("eof")
-	ErrIndent    = errors.New("indentation mismatch")
-	ErrRange     = errors.New("out of range")
-	ErrMalformed = errors.New("malformed syntax")
-)
-
 type Node struct {
 	Kind   int
 	Text   string
