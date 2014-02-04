@@ -297,16 +297,10 @@ func (p *Parser) Parse(tokens []*Token) *Node {
 }
 
 func (p *Parser) ParsePart(tokens []*Token) *Node {
-	if p.root == nil {
-		return p.Parse(tokens)
-	}
 	root := p.root
 	child := p.Parse(tokens)
-
-	if root != nil {
-		root.AddChild(child)
-		p.root = root
-		p.curr = root
-	}
+	root.AddChild(child)
+	p.root = root
+	p.curr = root
 	return child
 }
