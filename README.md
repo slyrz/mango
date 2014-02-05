@@ -2,8 +2,9 @@
 
 *Generate manual pages from the source code of your Go commands*
 
-*mango* is a small command line utility that allows you to create manual
-pages from the source code of your Go commands.
+mango is a small command line utility that allows you to create manual
+pages from the source code of your Go commands. It builds manual pages from
+the comments and *flag* function calls found in your .go files.
 
 #### Building
 
@@ -23,8 +24,13 @@ manual page for each argument.
 mango file1.go file2.go ...
 ```
 
+## Usage
+
+```go
+// TODO:...
+```
+
 ### License
 
 mango is released under MIT license.
 You can find a copy of the MIT License in the [LICENSE](./LICENSE) file.
-
