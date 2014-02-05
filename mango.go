@@ -9,9 +9,24 @@ package main
 import (
 	"./markup"
 	"./source"
+	"flag"
 	"fmt"
 	"os"
+	"path"
 )
+
+var (
+	optPath = ""
+	optName = ""
+)
+
+func init() {
+	// Save manual pages to specified directory.
+	flag.StringVar(&optPath, "dir", "", "output directory")
+
+	// Define command name via flag instead of using filename.
+	flag.StringVar(&optName, "name", "", "command name")
+}
 
 type Builder struct {
 	File      *source.File
@@ -37,6 +52,9 @@ func (b *Builder) Load(path string) error {
 	}
 	b.File = file
 
+	if len(optName) > 0 {
+		b.File.Name = optName
+	}
 	b.Writer.WriteTitle(b.File.Name)
 	b.Writer.WriteDate(b.File.Time)
 	b.feedDocumentation()
@@ -116,8 +134,32 @@ func (b *Builder) Save(path string) error {
 	return markup.Save(b.Writer, file)
 }
 
+func usage() {
+	fmt.Println("Usage:")
+	fmt.Println("  mango [option]... [go-file]...\n")
+	fmt.Println("Options:")
+
+	flag.CommandLine.VisitAll(func(fl *flag.Flag) {
+		name := fl.Name
+		help := fl.Usage
+		if _, ok := fl.Value.(interface {
+			IsBoolFlag()
+		}); !ok {
+			name = fmt.Sprintf("%s=<value>", name)
+		}
+		fmt.Printf("  -%-18s\n\t%s\n", name, help)
+	})
+}
+
 func main() {
-	for _, srcPath := range os.Args[1:] {
+	flag.Usage = usage
+	flag.Parse()
+	if flag.NArg() == 0 {
+		flag.Usage()
+		return
+	}
+
+	for _, srcPath := range flag.Args() {
 		builder := NewBuilder()
 
 		if err := builder.Load(srcPath); err != nil {
@@ -126,11 +168,14 @@ func main() {
 		}
 
 		dstPath := fmt.Sprintf("%s.1", builder.File.Name)
+		if len(optPath) > 0 {
+			dstPath = path.Join(optPath, dstPath)
+		}
+
 		if err := builder.Save(dstPath); err != nil {
 			fmt.Fprintf(os.Stderr, "Warning: Could not save '%s': %s\n", dstPath, err)
 			continue
 		}
-
 		fmt.Printf("%s -> %s\n", srcPath, dstPath)
 	}
 }
