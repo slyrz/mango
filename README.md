@@ -5,83 +5,22 @@
 *mango* is a small command line utility that allows you to create manual
 pages from the source code of your Go commands.
 
-## Overview
+#### Building
 
-TODO: ...
-
-## Formatting
-
-mango supports comment formatting in a Markdown-like syntax.
-
-### Headings
-
+Execute
+```bash
+go build ./mango.go
 ```
-First Heading:
+to build mango.
 
-Riverrun, past Eve and Adam's, from swerve of shore to bend
-of bay, brings us by a commodius vicus of recirculation
-back to Howth Castle and Environs.
+#### Running
 
-Second Heading
-==============
-Riverrun, past Eve and Adam's, from swerve of shore to bend
-of bay, brings us by a commodius vicus of recirculation
-back to Howth Castle and Environs.
+Pass one or more .go files as command line arguments to mango.
+mango treats them as a list of independent Go commands and creates a
+manual page for each argument.
 
-Third Heading
--------------
-Riverrun, past Eve and Adam's, from swerve of shore to bend
-of bay, brings us by a commodius vicus of recirculation
-back to Howth Castle and Environs.
-```
-
-### Paragraphs
-
-Paragraphs are separated by a blank line.
-
-```
-Riverrun, past Eve and Adam's, from swerve of shore to bend
-of bay, brings us by a commodius vicus of recirculation
-back to Howth Castle and Environs.
-
-Sir Tristram, violer d'amores, fr'over the short sea,
-had passencore rearrived from North Armorica on this side the scraggy
-isthmus of Europe Minor to wielderfight his penisolate war.
-```
-
-### Emphasis
-
-Asterisks (\*) and underscores (\_) are indicators of emphasis.
-
-```
-*Wassaily Booslaeugh* of _Riesengeborg_
-```
-
-### Code
-
-Code blocks begin with a closing angle bracket (>).
-
-```
-> echo "Kick nuck, Knockcastle"
-```
-
-### Lists
-
-Asterisks, numbers or single words followed by a closing parenthesis
-at the start of a line create list items.
-
-```
-*) Item
-*) Item
-*) Item
-
-1) Item
-2) Item
-3) Item
-
-a) Item
-b) Item
-c) Item
+```bash
+mango file1.go file2.go ...
 ```
 
 ### License
