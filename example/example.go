@@ -23,8 +23,8 @@ var (
 func init() {
 	// These two calls reference the same variable and should appear
 	// grouped in the manual page.
-	flag.Bool(&optBaz, "baz", false, "two calls, but one entry in the manual")
-	flag.Bool(&optBaz, "b", false, "two calls, but one entry in the manual")
+	flag.BoolVar(&optBaz, "baz", false, "two calls, but one entry in the manual")
+	flag.BoolVar(&optBaz, "b", false, "two calls, but one entry in the manual")
 }
 
 func main() {
