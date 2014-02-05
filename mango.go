@@ -13,6 +13,7 @@ import (
 	"fmt"
 	"os"
 	"path"
+	"strings"
 )
 
 var (
@@ -93,6 +94,7 @@ func (b *Builder) feedOptions() {
 	b.Renderer.Section("Options")
 	for _, opt := range b.File.Options {
 		textHead := ""
+		textType := ""
 		textBody := ""
 
 		if len(opt.Short) > 0 {
@@ -107,6 +109,10 @@ func (b *Builder) feedOptions() {
 			textBody = opt.Usage
 		}
 
+		if opt.Type != "Bool" {
+			textType = fmt.Sprintf("<%s>", strings.ToLower(opt.Type))
+		}
+
 		// Tokenize body text. We haven't written anything yet, so if Tokenize
 		// function fails, the document stays unchanged and we try to parse the
 		// next option.
@@ -117,6 +123,9 @@ func (b *Builder) feedOptions() {
 		}
 
 		b.Renderer.TextBold(textHead)
+		if len(textType) > 0 {
+			b.Renderer.Text(textType)
+		}
 		if len(tokens) > 0 {
 			markup.Render(b.Renderer, b.Parser.ParsePart(tokens))
 		}
