@@ -78,11 +78,9 @@ func (b *Builder) feedSynopsis() {
 	b.Renderer.Section("Synopsis")
 	b.Renderer.Text(b.File.Name)
 	if len(b.File.Options) > 0 {
-		b.Renderer.TextUnderline("[option]")
-		b.Renderer.Text("... ")
+		b.Renderer.TextUnderline("[option...]")
 	}
-	b.Renderer.TextUnderline("[args]")
-	b.Renderer.Text("... ")
+	b.Renderer.TextUnderline("[argument...]")
 	b.Renderer.Break()
 }
 
@@ -154,7 +152,7 @@ func usage() {
 		if _, ok := fl.Value.(interface {
 			IsBoolFlag()
 		}); !ok {
-			name = fmt.Sprintf("%s=<value>", name)
+			name = fmt.Sprintf("%s <value>", name)
 		}
 		fmt.Printf("  -%-18s\n\t%s\n", name, help)
 	})
