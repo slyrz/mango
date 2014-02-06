@@ -14,12 +14,9 @@ var (
 	sections = []string{
 		"name",
 		"synopsis",
-		"configuration",
 		"description",
 		"options",
 		"exit status",
-		"return value",
-		"errors",
 	}
 )
 
