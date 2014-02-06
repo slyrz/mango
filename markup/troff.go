@@ -18,20 +18,20 @@ func NewTroffRenderer(output Writer) *TroffRenderer {
 func (tr *TroffRenderer) Group(n *Node) {
 	// Don't indent the root node.
 	if n.Parent != nil {
-		tr.Output.Write(".RS 4\n")
+		tr.Output.Writeln(`.RS 4`)
 	}
 	RenderChilds(tr, n)
 	if n.Parent != nil {
-		tr.Output.Write(".RE\n")
+		tr.Output.Writeln(`.RE`)
 	}
 }
 
 func (tr *TroffRenderer) Block(n *Node) {
-	tr.Output.Write(".RS 4\n")
-	tr.Output.Write(".nf\n")
+	tr.Output.Writeln(`.RS 4`)
+	tr.Output.Writeln(`.nf`)
 	RenderChilds(tr, n)
-	tr.Output.Write(".fi\n")
-	tr.Output.Write(".RE\n")
+	tr.Output.Writeln(`.fi`)
+	tr.Output.Writeln(`.RE`)
 }
 
 func (tr *TroffRenderer) List(n *Node) {
@@ -39,18 +39,18 @@ func (tr *TroffRenderer) List(n *Node) {
 }
 
 func (tr *TroffRenderer) ListItem(n *Node) {
-	tr.Output.Write(".TP\n")
+	tr.Output.Writeln(`.TP`)
 	if n.Text == "*" {
-		tr.Output.Write("\\(bu\n")
+		tr.Output.Writeln(`\(bu`)
 	} else {
-		tr.Output.Write(".B \"%s\"\n", n.Text)
+		tr.Output.Writeln(`.B "%s"`, n.Text)
 	}
 	RenderChilds(tr, n)
 }
 
 func (tr *TroffRenderer) Section(text string) {
 	tr.Output.WritePart(text)
-	tr.Output.Write(".SH \"%s\"\n", strings.ToUpper(text))
+	tr.Output.Writeln(`.SH "%s"`, strings.ToUpper(text))
 }
 
 func (tr *TroffRenderer) Space() {
@@ -58,19 +58,19 @@ func (tr *TroffRenderer) Space() {
 }
 
 func (tr *TroffRenderer) Break() {
-	tr.Output.Write(".PP\n")
+	tr.Output.Writeln(`.PP`)
 }
 
 func (tr *TroffRenderer) Text(text string) {
-	tr.Output.Write("%s\n", strings.TrimSpace(text))
+	tr.Output.Writeln(strings.TrimSpace(text))
 }
 
 func (tr *TroffRenderer) TextBold(text string) {
-	tr.Output.Write(".B \"%s\"\n", text)
+	tr.Output.Writeln(`.B "%s"`, text)
 }
 
 func (tr *TroffRenderer) TextUnderline(text string) {
-	tr.Output.Write(".I \"%s\"\n", text)
+	tr.Output.Writeln(`.I "%s"`, text)
 }
 
 type TroffWriter struct {
@@ -137,7 +137,7 @@ func (w *TroffWriter) Head() string {
 	titleHi := strings.Title(w.title)
 	dateStr := fmt.Sprintf("%d-%02d-%02d", w.date.Year(), w.date.Month(), w.date.Day())
 
-	return fmt.Sprintf(`.TH "%s" 1 "%s" "%s" "%s Manual"\n`, titleUp, dateStr, titleHi, titleHi)
+	return fmt.Sprintf(`.TH "%s" 1 "%s" "%s" "%s Manual"`+"\n", titleUp, dateStr, titleHi, titleHi)
 }
 
 func (w *TroffWriter) Tail() string {
