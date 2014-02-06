@@ -24,7 +24,9 @@ type Writer interface {
 	WriteTitle(name string)
 	WriteDate(date time.Time)
 	WritePart(name string)
+
 	Write(format string, args ...interface{})
+	Writeln(format string, args ...interface{})
 
 	Parts() map[string]string
 	Order() []string

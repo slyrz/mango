@@ -96,11 +96,22 @@ func (w *TroffWriter) WritePart(name string) {
 	w.parts[key] = w.active
 }
 
-func (w *TroffWriter) Write(format string, args ...interface{}) {
+func (w *TroffWriter) writeFmt(newline bool, format string, args ...interface{}) {
 	if w.active == nil {
 		panic("write called but no part active")
 	}
 	fmt.Fprintf(w.active, format, args...)
+	if newline {
+		fmt.Fprintln(w.active)
+	}
+}
+
+func (w *TroffWriter) Write(format string, args ...interface{}) {
+	w.writeFmt(false, format, args...)
+}
+
+func (w *TroffWriter) Writeln(format string, args ...interface{}) {
+	w.writeFmt(true, format, args...)
 }
 
 func (w *TroffWriter) Parts() map[string]string {
