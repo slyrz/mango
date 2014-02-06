@@ -116,11 +116,17 @@ func (w *TroffWriter) Order() []string {
 }
 
 func (w *TroffWriter) Head() string {
-	titleLo := strings.ToLower(w.title)
+	// Generates a Linux style man page title line:
+	//   - Title of man page in all caps
+	//   - Section number
+	//   - Date in YYYY-MM-DD format (position footer, middle)
+	//   - Source of the command (position footer, left)
+	//   - Title of the manual (position header, center)
+	titleUp := strings.ToUpper(w.title)
 	titleHi := strings.Title(w.title)
-	dateStr := fmt.Sprintf("%02d/%02d/%d", w.date.Day(), w.date.Month(), w.date.Year())
+	dateStr := fmt.Sprintf("%d-%02d-%02d", w.date.Year(), w.date.Month(), w.date.Day())
 
-	return fmt.Sprintf(".TH \"%s\" \"1\" \"\" \"%s\" \"%s Manual\"\n", titleLo, dateStr, titleHi)
+	return fmt.Sprintf(`.TH "%s" 1 "%s" "%s" "%s Manual"\n`, titleUp, dateStr, titleHi, titleHi)
 }
 
 func (w *TroffWriter) Tail() string {
