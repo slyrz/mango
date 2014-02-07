@@ -10,7 +10,7 @@ the comments and *flag* function calls found in your .go files.
 
 Execute
 ```bash
-go build ./mango.go
+go build mango.go
 ```
 to build mango.
 
