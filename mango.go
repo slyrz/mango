@@ -2,7 +2,10 @@
 //
 // Description:
 //
-// TODO...
+// mango is a small command line utility that allows you to create
+// manual pages from the source code of your Go commands.
+// It builds manual pages from the comments and flag function calls found in
+// your .go files.
 //
 package main
 
