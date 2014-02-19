@@ -10,13 +10,14 @@
 package main
 
 import (
-	"./markup"
-	"./source"
 	"flag"
 	"fmt"
 	"os"
 	"path"
 	"strings"
+
+	"github.com/slyrz/mango/markup"
+	"github.com/slyrz/mango/source"
 )
 
 var (
