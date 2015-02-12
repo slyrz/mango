@@ -21,8 +21,9 @@ import (
 )
 
 var (
-	optPath = ""
-	optName = ""
+	optPath  = ""
+	optName  = ""
+	optPlain = false
 )
 
 func init() {
@@ -31,6 +32,9 @@ func init() {
 
 	// Define command name via flag instead of using filename.
 	flag.StringVar(&optName, "name", "", "command name")
+
+	// Treat comments as plain text rather than markdown.
+	flag.BoolVar(&optPlain, "plain", false, "plain text comments")
 }
 
 type Builder struct {
@@ -69,6 +73,12 @@ func (b *Builder) Load(path string) error {
 }
 
 func (b *Builder) feedDocumentation() {
+	if optPlain {
+		b.Renderer.Section("Name")
+		b.Renderer.Text(b.File.Doc)
+		return
+	}
+
 	tokens, err := b.Tokenizer.TokenizeString(b.File.Doc)
 	if err != nil {
 		return
@@ -115,13 +125,21 @@ func (b *Builder) feedOptions() {
 			textType = fmt.Sprintf("<%s>", strings.ToLower(opt.Type))
 		}
 
-		// Tokenize body text. We haven't written anything yet, so if Tokenize
-		// function fails, the document stays unchanged and we try to parse the
-		// next option.
-		tokens, err := b.Tokenizer.TokenizeString(textBody)
-		if err != nil {
-			fmt.Fprintf(os.Stderr, "Warning:")
-			continue
+		tokens := markup.Tokens{
+			markup.NewToken(markup.TOKEN_INDENT),
+			markup.NewTokenWithText(markup.TOKEN_TEXT, textBody),
+			markup.NewToken(markup.TOKEN_EOL),
+		}
+		if !optPlain {
+			// Tokenize body text. We haven't written anything yet, so if Tokenize
+			// function fails, the document stays unchanged and we try to parse the
+			// next option.
+			var err error
+			tokens, err = b.Tokenizer.TokenizeString(textBody)
+			if err != nil {
+				fmt.Fprintf(os.Stderr, "Warning:")
+				continue
+			}
 		}
 
 		b.Renderer.TextBold(textHead)
