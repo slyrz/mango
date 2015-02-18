@@ -17,7 +17,7 @@ var (
 type File struct {
 	Options []*Option // Options found in file.
 	Name    string    // Name of command.
-	Doc     string    // Comment at top of file.
+	Doc     string    // Comment preceding the "package" keyword.
 	Time    time.Time // Modification time.
 
 	// Unexported fields
@@ -52,6 +52,13 @@ func NewFile(filePath string) (*File, error) {
 	result.fileSet = fileSet
 	result.file = file
 
+	// The last comment group before a package declaration must contain the
+	// command description.
+	packageLine := 2
+	if packagePos := fileSet.Position(file.Package); packagePos.IsValid() {
+		packageLine = packagePos.Line
+	}
+
 	// Load comment groups and map them to their ending line number.
 	// We assume a comment belongs to a command line flag declaration if it
 	// ends on the previous line of the flag declaration.
@@ -60,7 +67,7 @@ func NewFile(filePath string) (*File, error) {
 		pos := fileSet.Position(group.Pos())
 		end := fileSet.Position(group.End())
 
-		if pos.Line == 1 {
+		if pos.Line < packageLine {
 			result.Doc = group.Text()
 		}
 		result.comments[end.Line] = group
