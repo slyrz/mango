@@ -10,7 +10,8 @@ the comments and *flag* function calls found in your .go files.
 
 Execute
 ```bash
-go install github.com/slyrz/mango
+go get github.com/slyrz/mango
+go build github.com/slyrz/mango
 ```
 to build mango.
 
