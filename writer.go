@@ -14,7 +14,7 @@ type Writer interface {
 	Text(string)
 	TextBold(string)
 	TextUnderline(string)
-	Option(string, string, string)
+	Flag(string, string, string)
 
 	Done() string
 }
@@ -122,7 +122,7 @@ func (tr *Troff) TextUnderline(text string) {
 	tr.writeln(`.I "%s"`, strings.TrimSpace(text))
 }
 
-func (tr *Troff) Option(name, short, param string) {
+func (tr *Troff) Flag(name, short, param string) {
 	tr.writeln(".TP")
 	if short != "" {
 		tr.write(`.B \-%s -%s`, short, name)

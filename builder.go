@@ -51,10 +51,10 @@ func (b *Builder) Build(f *File) (string, error) {
 	b.w.TextUnderline("[argument...]")
 
 	b.w.Section("Options")
-	for _, opt := range f.Options {
+	for _, opt := range f.Flags {
 		var doc string
 
-		b.w.Option(opt.Name, opt.Short, opt.Param)
+		b.w.Flag(opt.Name, opt.Short, opt.Param)
 		if opt.Doc != "" {
 			doc = opt.Doc
 		} else {

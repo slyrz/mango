@@ -66,43 +66,43 @@ func NewFunctionCall(fs *token.FileSet, n *ast.CallExpr) (*FunctionCall, error) 
 	}, nil
 }
 
-type OptionType uint32
+type FlagType uint32
 
 const (
-	UnkownOption OptionType = iota
-	BoolOption
-	DurationOption
-	FloatOption
-	IntOption
-	UintOption
-	StringOption
+	UnkownFlag FlagType = iota
+	BoolFlag
+	DurationFlag
+	FloatFlag
+	IntFlag
+	UintFlag
+	StringFlag
 )
 
-var optionTypes = map[string]OptionType{
-	"Bool":     BoolOption,
-	"Duration": DurationOption,
-	"Float":    FloatOption,
-	"Float64":  FloatOption,
-	"Int":      IntOption,
-	"Int64":    IntOption,
-	"String":   StringOption,
-	"Uint":     UintOption,
-	"Uint64":   UintOption,
+var flagTypes = map[string]FlagType{
+	"Bool":     BoolFlag,
+	"Duration": DurationFlag,
+	"Float":    FloatFlag,
+	"Float64":  FloatFlag,
+	"Int":      IntFlag,
+	"Int64":    IntFlag,
+	"String":   StringFlag,
+	"Uint":     UintFlag,
+	"Uint64":   UintFlag,
 }
 
-// optionParam maps option types to their default parameter names. These
+// flagParam maps flag types to their default parameter names. These
 // parameter names will be used if the usage string does not contain a
 // backquoted name.
-var optionParam = map[OptionType]string{
-	DurationOption: "duration",
-	FloatOption:    "float",
-	IntOption:      "int",
-	StringOption:   "string",
-	UintOption:     "uint",
+var flagParam = map[FlagType]string{
+	DurationFlag: "duration",
+	FloatFlag:    "float",
+	IntFlag:      "int",
+	StringFlag:   "string",
+	UintFlag:     "uint",
 }
 
-type Option struct {
-	Type     OptionType
+type Flag struct {
+	Type     FlagType
 	Line     int
 	Variable string // Pointer name (only set for ...Var() calls)
 	Name     string // Name of the flag
@@ -114,7 +114,7 @@ type Option struct {
 
 const Quotes = "\"`"
 
-func NewOptionFromCallExpr(fs *token.FileSet, n *ast.CallExpr) (*Option, error) {
+func NewFlag(fs *token.FileSet, n *ast.CallExpr) (*Flag, error) {
 	call, err := NewFunctionCall(fs, n)
 	if err != nil {
 		fmt.Println("ERROR")
@@ -128,8 +128,8 @@ func NewOptionFromCallExpr(fs *token.FileSet, n *ast.CallExpr) (*Option, error) 
 	if len(call.Args) == 3 {
 		call.Args = append([]string{""}, call.Args...)
 	}
-	result := &Option{
-		Type:     optionTypes[match[1]],
+	result := &Flag{
+		Type:     flagTypes[match[1]],
 		Line:     call.Line,
 		Variable: call.Args[0],
 		Name:     strings.Trim(call.Args[1], Quotes),
@@ -140,7 +140,7 @@ func NewOptionFromCallExpr(fs *token.FileSet, n *ast.CallExpr) (*Option, error) 
 		result.Param = match[1]
 		result.Usage = strings.Replace(result.Usage, "`", "", -1)
 	} else {
-		result.Param = optionParam[result.Type]
+		result.Param = flagParam[result.Type]
 	}
 	return result, nil
 }
@@ -151,7 +151,7 @@ func assignIfEmpty(d *string, v string) {
 	}
 }
 
-func (o *Option) merge(v *Option) {
+func (o *Flag) merge(v *Flag) {
 	if len(o.Name) < len(v.Name) {
 		o.Short = o.Name
 		o.Name = v.Name
