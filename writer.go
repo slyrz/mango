@@ -4,9 +4,11 @@ import (
 	"bytes"
 	"fmt"
 	"strings"
+	"time"
 )
 
 type Writer interface {
+	Meta(string, time.Time)
 	Block(string)
 	Break(string)
 	List(string)
@@ -32,6 +34,8 @@ type Troff struct {
 	order    []string
 	active   string
 	buffer   bytes.Buffer
+	name		 string
+	date		 string
 }
 
 func NewTroffWriter() *Troff {
@@ -46,7 +50,13 @@ func (tr *Troff) Done() string {
 	}
 	tr.buffer.Reset()
 
-	tr.writeln(`.TH "%s" 1 "%s" "%s" "%s Manual"`, "TEST", "1999-12-31", "TEST", "TEST")
+	// Generates a Linux style man page title line:
+	// 	1. Title of man page in all caps
+	//  2. Section number
+	//  3. Date in YYYY-MM-DD format (footer, middle)
+	//  4. Source of the command (footer, left)
+	//  5. Title of the manual (header, center)
+	tr.writeln(`.TH "%[1]s" 1 "%[3]s" "%[2]s" "%[2]s Manual"`, strings.ToUpper(tr.name), tr.name, tr.date)
 
 	// At first, render special Manpage sections in their usual order.
 	for _, section := range manSections {
@@ -73,6 +83,11 @@ func (tr *Troff) write(format string, args ...interface{}) {
 
 func (tr *Troff) writeln(format string, args ...interface{}) {
 	fmt.Fprintf(&tr.buffer, format+"\n", args...)
+}
+
+func (tr *Troff) Meta(name string, date time.Time) {
+	tr.name = strings.Title(name)
+	tr.date = date.Format("2006-01-02")
 }
 
 func (tr *Troff) Break(text string) {

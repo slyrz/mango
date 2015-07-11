@@ -37,6 +37,7 @@ func (b *Builder) Build(f *File) (string, error) {
 		return "", err
 	}
 
+	b.w.Meta(f.Name, f.Time)
 	b.w.Section("Name")
 	for _, node := range root.Childs {
 		if node.Type == SectionNode {
@@ -66,12 +67,10 @@ func (b *Builder) Build(f *File) (string, error) {
 		}
 		b.write(node)
 	}
-
 	for _, node := range root.Childs {
 		if node.Type == SectionNode {
 			b.write(node)
 		}
 	}
-
 	return b.w.Done(), nil
 }
