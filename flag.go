@@ -2,7 +2,6 @@ package main
 
 import (
 	"errors"
-	"fmt"
 	"go/ast"
 	"go/token"
 	"regexp"
@@ -117,7 +116,6 @@ const Quotes = "\"`"
 func NewFlag(fs *token.FileSet, n *ast.CallExpr) (*Flag, error) {
 	call, err := NewFunctionCall(fs, n)
 	if err != nil {
-		fmt.Println("ERROR")
 		return nil, err
 	}
 	match := regexFlagCall.FindStringSubmatch(call.Expr)
