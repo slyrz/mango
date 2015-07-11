@@ -2,7 +2,6 @@ package main
 
 import (
 	"flag"
-	_ "fmt"
 	"os"
 	"os/exec"
 )
