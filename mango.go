@@ -4,21 +4,18 @@ import (
 	"flag"
 	"fmt"
 	"os"
-	"path"
 )
 
 var options = struct {
-	Path   string
+	Output string
 	Name   string
 	Plain  bool
-	Stdout bool
 }{}
 
 func init() {
-	flag.StringVar(&options.Path, "dir", "", "output directory")
+	flag.StringVar(&options.Output, "output", "", "write output to file")
 	flag.StringVar(&options.Name, "name", "", "command name")
 	flag.BoolVar(&options.Plain, "plain", false, "plain text comments")
-	flag.BoolVar(&options.Stdout, "stdout", false, "write output to stdout")
 }
 
 func getReader() Reader {
@@ -47,11 +44,10 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
-
-		if options.Stdout {
+		if options.Output == "" {
 			fmt.Println(text)
 		} else {
-			dst, err := os.Create(path.Join(options.Path, file.Name))
+			dst, err := os.Create(options.Output)
 			if err != nil {
 				panic(err)
 			}
