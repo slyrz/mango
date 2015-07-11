@@ -42,6 +42,9 @@ func main() {
 		if err != nil {
 			panic(err)
 		}
+		if options.Name != "" {
+			file.Name = options.Name
+		}
 		text, err := builder.Build(file)
 		if err != nil {
 			panic(err)
