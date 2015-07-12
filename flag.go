@@ -111,7 +111,15 @@ type Flag struct {
 	Doc      string // Comment above flag declaration
 }
 
-const Quotes = "\"`"
+func trimQuotes(s string) string {
+	if len(s) == 0 {
+		return ""
+	}
+	if (s[0] == '`' || s[0] == '"') && s[0] == s[len(s)-1] {
+		s = s[1 : len(s)-1]
+	}
+	return s
+}
 
 func NewFlag(fs *token.FileSet, n *ast.CallExpr) (*Flag, error) {
 	call, err := NewFunctionCall(fs, n)
@@ -130,8 +138,8 @@ func NewFlag(fs *token.FileSet, n *ast.CallExpr) (*Flag, error) {
 		Type:     flagTypes[match[1]],
 		Line:     call.Line,
 		Variable: call.Args[0],
-		Name:     strings.Trim(call.Args[1], Quotes),
-		Usage:    strings.Trim(call.Args[3], Quotes),
+		Name:     trimQuotes(call.Args[1]),
+		Usage:    trimQuotes(call.Args[3]),
 	}
 	// Check if there's a backquoted parameter name in the usage string.
 	if match := regexBackquote.FindStringSubmatch(result.Usage); match != nil {
