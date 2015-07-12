@@ -1,3 +1,14 @@
+// mango - generate manual pages from Go source code
+//
+// Description:
+//
+// mango generates manual pages from the source code of Go commands.
+// It aims to generate full-fledged manual pages soley based on the comments
+// and flag function calls found inside Go source code.
+//
+// See Also:
+//
+// man(1), man-pages(7)
 package main
 
 import (
@@ -14,10 +25,14 @@ var options = struct {
 }{}
 
 func init() {
-	flag.StringVar(&options.Output, "output", "", "write output to file")
-	flag.StringVar(&options.Name, "name", "", "set command name")
+	// Write the manual page to file.
+	flag.StringVar(&options.Output, "output", "", "write to `file`")
+	// Set the manual page title to name.
+	flag.StringVar(&options.Name, "title", "", "set title to `name`")
+	// Ignore markup inside comments.
 	flag.BoolVar(&options.Plain, "plain", false, "treat comments as plain text")
-	flag.BoolVar(&options.Preview, "preview", false, "preview output in man")
+	// Preview the manual page with the man command.
+	flag.BoolVar(&options.Preview, "preview", false, "preview with man")
 }
 
 func getReader() Reader {
