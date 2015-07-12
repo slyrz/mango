@@ -34,8 +34,8 @@ type Troff struct {
 	order    []string
 	active   string
 	buffer   bytes.Buffer
-	name		 string
-	date		 string
+	name     string
+	date     string
 }
 
 func NewTroffWriter() *Troff {
